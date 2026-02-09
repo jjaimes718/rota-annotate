@@ -46,7 +46,7 @@ At the moment, the code is executed in 4 dfferent steps.
 IN_ASSEMBY  READ_1  READ_2  OUT_DIR
 PROJECT_NAME/2_analysis_input/1/ASSEMBLY_1.fas  PROJECT_NAME/2_analysis_input/1/ASSEMBLY_1_R1.fastq  PROJECT_NAME/2_analysis_input/1/ASSEMBLY_1_R2.fastq	PROJECT_NAME/2_analysis_input/1
 PROJECT_NAME/2_analysis_input/2/ASSEMBLY_2.fas  PROJECT_NAME/2_analysis_input/2/ASSEMBLY_2_R1.fastq  PROJECT_NAME/2_analysis_input/2/ASSEMBLY_2_R2.fastq	PROJECT_NAME/2_analysis_input/2
-PROJECT_NAME/2_analysis_input/3/ASSEMBLY_3.fas  PROJECT_NAME/2_analysis_input/1/ASSEMBLY_3_R1.fastq  PROJECT_NAME/2_analysis_input/1/ASSEMBLY_3_R2.fastq	PROJECT_NAME/2_analysis_input/3
+PROJECT_NAME/2_analysis_input/3/ASSEMBLY_3.fas  PROJECT_NAME/2_analysis_input/3/ASSEMBLY_3_R1.fastq  PROJECT_NAME/2_analysis_input/1/ASSEMBLY_3_R2.fastq	PROJECT_NAME/2_analysis_input/3
 ```
 ### 3. Run Sequence Analysis
 
