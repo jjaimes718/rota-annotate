@@ -70,10 +70,10 @@ PROJECT_NAME/2_analysis_input/3/ASSEMBLY_3.fas  PROJECT_NAME/2_analysis_input/3/
 ```
 
 - Submits 4 job arrays:
-  - **run_vigor4.sh**: VIGOR4 is a tool used for rotavirus gene prediction
+  - **run_vigor4.sh**: [VIGOR4](<https://github.com/JCVenterInstitute/VIGOR4>) is a tool used for rotavirus gene prediction
   - **run_blast_1.sh**: runs blastn against NCBI's "nt" database
   - **run_blast_2.sh**: runs blastn against a custom database (contains rotavirus sequences with known genotypes)
-  - **run_bowtie.sh**: runs bowtie2 (read coverage statistics)
+  - **run_bowtie.sh**: runs [bowtie2](<https://github.com/BenLangmead/bowtie2>) (read coverage statistics)
 
 ### 4. Generate Analysis Summary Report
 
