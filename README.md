@@ -20,7 +20,7 @@ Input directory structure:
 - Create a project directory ( PROJECT_NAME ):
 - Create a sub directory ( "1_original_input" ) containing original assembly and read files
   - assembly (FASTA)
-    - reads (FASTQ)
+  - reads (FASTQ)
 
 At the moment, the code is executed in 4 dfferent steps.
 
