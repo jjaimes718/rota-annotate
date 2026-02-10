@@ -2,6 +2,10 @@
 
 Analysis and annotation of rotavirus genome assemblies.
 
+### Workflow
+
+![Rota-annotate workflow diagram](assets/images/Work_Flow.png)
+
 ## Usage
 
 ### Input
