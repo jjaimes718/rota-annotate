@@ -2,9 +2,13 @@
 
 Analysis and annotation of rotavirus genome assemblies.
 
+___
+
 ## Workflow
 
 ![Rota-annotate workflow diagram](assets/images/Work_Flow.png)
+
+___
 
 ## Usage
 
@@ -88,3 +92,23 @@ PROJECT_NAME/2_analysis_input/3/ASSEMBLY_3.fas  PROJECT_NAME/2_analysis_input/3/
 ```
 
 Once all jobs/tasks are completed. This step concatenates all results and generates a final Excel summary report.
+
+___
+
+## Input Tables & Templates
+
+
+### Sample Information Table
+
+Contains sample related information required for generating rotavirus sequence annotation.
+
+| Column Name | Description |
+| ----------- | ----------- |
+| **collection.date** | The date the speciman was collected (equivalent to GenBank source modifier [collection_date](<https://www.ncbi.nlm.nih.gov/WebSub/html/help/genbank-source-table.html#modifiers>)) |
+| **country** | Geographic location of the collected sample (equivalent to GenBank source modifier [geo_loc_name](<https://www.ncbi.nlm.nih.gov/genbank/collab/country/>)) |
+| **iso_alpha3_code** | Three-letter country code ([ISO 3166-1 alpha-3](<https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3>)) |
+| **host** | Host species using binomial nomenclature (*Genus + species*) |
+| **host.common** | Refers to species of origin (first component) as described by [Matthijnssens et al. 2011](<https://pmc.ncbi.nlm.nih.gov/articles/PMC3398998/>) (Ex: Human, Pig, Cow, Dog, Cat, Mouse, Horse, "Vaccine" for vaccine strains, "Env" for environmental samples, "X" if unknown) |
+| **type** | Refers to species of origin (second component) as described by [Matthijnssens et al. 2011](<https://pmc.ncbi.nlm.nih.gov/articles/PMC3398998/>) ("**wt**": wild type; "**tc**": tissue-culture adapted; "**lab**": lab-genereated or -engineered; X": unknown; ) |
+| **isolation.source** | |
+| **common_name.prefix** | |
