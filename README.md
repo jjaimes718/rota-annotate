@@ -1,16 +1,50 @@
+
 # rota-annotate
 
 Analysis and annotation of rotavirus genome assemblies.
 
-___
+---
 
-## Workflow
+## Table of Contents
+
+1. [About](#about)
+2. [General Workflow](#general-workflow)
+3. [Input](#input)
+
+---
+
+## About
+
+Since forming back in 2008, the [Rotavirus Classification Working Group] (RCWG) has developed guidelines for:
+
+   1.  Genotype classification group A rotaviruses ([Matthijnssens et al., 2008])
+   2.  Standardized rotavirus strain nomenclature ([Matthijnssens et al., 2011])
+
+Additionally, these guidelines established a standardized format for documenting associated strain data. Although their adoption has enhanced uniformity in the description and reporting of rotavirus strains, implementation in formatting of sequence records remains inconsistent. This often complicates querying and retrieval of data from sequence databases.
+
+Rota-annotate aims to automate the implementation of RCWG guidelines, offering tools for the analysis of genome assembly sequences and the generation of finalized sequence records suitable for publication (GenBank).
+
+[Rotavirus Classification Working Group]: <https://rega.kuleuven.be/cev/viralmetagenomics/virus-classification/rcwg>
+
+[Matthijnssens et al., 2008]: https://pubmed.ncbi.nlm.nih.gov/18604469/
+
+[Matthijnssens et al., 2011]: <https://pmc.ncbi.nlm.nih.gov/articles/PMC3398998/#abstract1>
+
+
+## General Workflow
 
 ![Rota-annotate workflow diagram](assets/images/Work_Flow.png)
 
 ___
 
 ## Input
+
+### A. Input Files
+
+   1. Assembly contig sequence files (FASTA)
+   2. Optional sequencing read files (FASTQ)
+
+### B. Input directory structure
 
 ```text
 ./data/PROJECT_NAME/
@@ -23,16 +57,15 @@ ___
 └── GenBank_Submission_Template/
 ```
 
-### Input directory structure
-
 - Create a project directory (**PROJECT_NAME**)
 - Create a 2 sub directories named: 
   - **1_original_input** - containing original **assembly** files (FASTA) and **read** files (FASTQ)
   - **GenBank_Submission_Template** - containing completed submission template
 
+## Usage
+
 ___
 
-## Usage
 At the moment, the code is executed in 5 dfferent steps.
 
 ### 1. Generate Sample Info Table
@@ -96,16 +129,22 @@ PROJECT_NAME/2_analysis_input/3/ASSEMBLY_3.fas  PROJECT_NAME/2_analysis_input/3/
 ```
 
 - Submits 4 job arrays:
-  - **run_vigor4.sh**: [VIGOR4](<https://github.com/JCVenterInstitute/VIGOR4>) is a tool used for rotavirus gene prediction
-  - **run_blast_1.sh**: runs blastn against NCBI's "nt" database
-  - **run_blast_2.sh**: runs blastn against a custom database (contains rotavirus sequences with known genotypes)
-  - **run_bowtie.sh**: runs [bowtie2](<https://github.com/BenLangmead/bowtie2>) (read coverage statistics)
+  - **run_vigor4.sh**: [VIGOR4] is a tool used for rotavirus gene prediction
+  - **run_blast_1.sh**: runs [blastn] against NCBI's [nt] database
+  - **run_blast_2.sh**: runs [blastn] against a custom database (contains rotavirus sequences with known genotypes)
+  - **run_bowtie.sh**: runs [bowtie2] (read coverage statistics)
+
+[VIGOR4]: <https://github.com/JCVenterInstitute/VIGOR4>
+[bowtie2]: <https://github.com/BenLangmead/bowtie2>
+[blastn]: <https://www.ncbi.nlm.nih.gov/books/NBK569856/>
+[nt]: <https://ftp.ncbi.nlm.nih.gov/blast/db/README>
+
 
 ### 4. Generate Analysis Summary Report
 
 ```bash
 
-./scripts/generate_analysis_summary.R --in_dir ./data/PROJECT_NAME
+./scripts/4_generate_analysis_summary.R --in_dir ./data/PROJECT_NAME
 
 ```
 
@@ -119,7 +158,10 @@ Once all jobs/tasks are completed. This step concatenates all results and genera
 
 ```
 
-- [table2asn](<https://www.ncbi.nlm.nih.gov/genbank/table2asn/?utm_source=ncbi_insights&utm_medium=referral&utm_campaign=table2asn-updated-20230706>): tool to generate sequence records for submission to GenBank
+- [table2asn]\: tool used to generate sequence records for submission to GenBank
+
+[table2asn]: <https://www.ncbi.nlm.nih.gov/genbank/table2asn/?utm_source=ncbi_insights&utm_medium=referral&utm_campaign=table2asn-updated-20230706>
+
 
 ```text
 
@@ -140,10 +182,19 @@ Once all jobs/tasks are completed. This step concatenates all results and genera
 ```
 
 - **Table2asn Input:**
-  - Nucleotide sequence file (***.fsa**)
-  - Feature Table (***.tbl**)
-  - Source Table (***.src**)
-  - [GenBank Submission Template](<https://submit.ncbi.nlm.nih.gov/genbank/template/submission/>) (***.sbt**)
+  - [Nucleotide sequence file] (***.fsa**)
+  - [Feature Table] (***.tbl**)
+  - [Source Table] (***.src**)
+  - [GenBank Submission Template] (***.sbt**)
+
+[Nucleotide sequence file]: <https://www.ncbi.nlm.nih.gov/genbank/table2asn/?utm_source=ncbi_insights&utm_medium=referral&utm_campaign=table2asn-updated-20230706#fsa>
+
+[Feature Table]: <https://www.ncbi.nlm.nih.gov/genbank/table2asn/?utm_source=ncbi_insights&utm_medium=referral&utm_campaign=table2asn-updated-20230706#tbl>
+
+[Source Table]: <https://www.ncbi.nlm.nih.gov/genbank/table2asn/?utm_source=ncbi_insights&utm_medium=referral&utm_campaign=table2asn-updated-20230706#src>
+
+[GenBank Submission Template]: <https://www.ncbi.nlm.nih.gov/genbank/table2asn/?utm_source=ncbi_insights&utm_medium=referral&utm_campaign=table2asn-updated-20230706#Template>
+
 
 - **Table2asn Output:**
   - GenBank flatfile (***.gbf**)
