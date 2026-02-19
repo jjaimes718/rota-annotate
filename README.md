@@ -5,27 +5,7 @@ Analysis and annotation of rotavirus genome assemblies.
 
 ---
 
-## <u>Table of Contents</u>
-
-- [rota-annotate](#rota-annotate)
-  - [Table of Contents](#table-of-contents)
-  - [About](#about)
-  - [General Workflow](#general-workflow)
-  - [ Input ](#-input-)
-    - [Input Files](#input-files)
-    - [Input directory structure](#input-directory-structure)
-  - [Usage](#usage)
-    - [1. Generate Sample Information Table](#1-generate-sample-information-table)
-      - [Sample Information Table - Column Descriptions](#sample-information-table---column-descriptions)
-    - [2. Setup Analysis Input/Output](#2-setup-analysis-inputoutput)
-      - [Job File](#job-file)
-    - [3. Run Sequence Analysis](#3-run-sequence-analysis)
-    - [4. Generate Analysis Summary Report](#4-generate-analysis-summary-report)
-    - [5. Generate GenBank Submission File](#5-generate-genbank-submission-file)
-
----
-
-## About
+## <u> About </u>
 
 Since forming back in 2008, the [Rotavirus Classification Working Group] (RCWG) has developed guidelines for:
 
@@ -38,7 +18,7 @@ Although their adoption has enhanced uniformity in the description rotavirus str
 
 ---
 
-## General Workflow
+## <u> General Workflow </u>
 
 ![Rota-annotate workflow diagram](assets/images/Work_Flow.png)
 
@@ -48,8 +28,8 @@ Although their adoption has enhanced uniformity in the description rotavirus str
 
 ### Input Files
 
-   1. Assembly contig sequence files (FASTA)
-   2. Optional sequencing read files (FASTQ)
+  1. Assembly contig sequence files (FASTA)
+  2. Optional sequencing read files (FASTQ)
 
 ### Input directory structure
 
@@ -89,7 +69,7 @@ At the moment, the code is executed in 5 dfferent steps.
   - Contains sample related information required for generating sequence annotation
   - If the table is not completed, default values are set
 
-#### Sample Information Table - Column Descriptions
+**Sample Information Table - Column Descriptions**
 
 | Column Name | Description |
 | :----------- | :----------------------- |
@@ -117,7 +97,6 @@ At the moment, the code is executed in 5 dfferent steps.
 - Generates input/output directories (for subsequent analysis step)
 - Generates analysis input file list (tab-delimited "job_file"):
 
-#### Job File
 ```text
 
 IN_ASSEMBY  READ_1  READ_2  OUT_DIR
@@ -141,9 +120,6 @@ PROJECT_NAME/2_analysis_input/3/ASSEMBLY_3.fas  PROJECT_NAME/2_analysis_input/3/
   - **run_blast_2.sh**: runs [blastn] against a custom database (contains rotavirus sequences with known genotypes)
   - **run_bowtie.sh**: runs [bowtie2] (read coverage statistics)
 
-
-
-
 ### 4. Generate Analysis Summary Report
 
 ```bash
@@ -163,9 +139,6 @@ Once all jobs/tasks are completed. This step concatenates all results and genera
 ```
 
 - [table2asn]\: tool used to generate sequence records for submission to GenBank
-
-[table2asn]: <https://www.ncbi.nlm.nih.gov/genbank/table2asn/?utm_source=ncbi_insights&utm_medium=referral&utm_campaign=table2asn-updated-20230706>
-
 
 ```text
 
@@ -190,6 +163,8 @@ Once all jobs/tasks are completed. This step concatenates all results and genera
   - [Feature Table] (***.tbl**)
   - [Source Table] (***.src**)
   - [GenBank Submission Template] (***.sbt**)
+
+
 
 
 - **Table2asn Output:**
@@ -218,3 +193,4 @@ Once all jobs/tasks are completed. This step concatenates all results and genera
 [geo_loc_name]: <https://www.ncbi.nlm.nih.gov/genbank/collab/country/>
 [ISO 3166-1 alpha-3]: <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3>
 [Isolation_source]: <https://www.ncbi.nlm.nih.gov/WebSub/html/help/genbank-source-table.html>
+[table2asn]: <https://www.ncbi.nlm.nih.gov/genbank/table2asn/?utm_source=ncbi_insights&utm_medium=referral&utm_campaign=table2asn-updated-20230706>
