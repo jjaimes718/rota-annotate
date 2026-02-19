@@ -57,7 +57,7 @@ blastn -task megablast \
 	-db $BLAST_DB \
 	-query $IN_FASTA \
 	-out $OUT_BLAST \
-	-max_target_seqs 20 \
+	-max_target_seqs 10 \
 	-evalue .001 \
 	-num_threads $NSLOTS \
 	-outfmt "6 qseqid sskingdoms stitle sacc pident qlen length slen mismatch gaps qstart qend sstart send sframe evalue staxids sscinames scomnames sblastnames sseqid sallseqid sgi sallgi sallacc bitscore score nident positive gapopen ppos frames qframe salltitles sstrand qcovs qcovhsp qcovus"
