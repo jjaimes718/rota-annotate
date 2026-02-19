@@ -133,6 +133,21 @@ message("\t", "ANALYSIS_OUT_DIR: ", analysis_out_dir)
 file_list <- list.files(path = in_dir, 
                         full.names = TRUE, recursive = TRUE)
 
+## Clear old summary file
+pattern = "Summary_.+xlsx$"
+in_summary <- list.files(path = in_dir, 
+                   pattern = pattern, 
+                   ignore.case = FALSE, 
+                   full.names = TRUE, 
+                   recursive = FALSE)
+
+if (length(in_summary) > 0) {
+  message("\n\t", "Clearing old summary report...",
+          "\n\t\tIN_SUMMARY: ", in_summary)
+  file.remove(in_summary)
+}
+
+
 ## ORIGINAL_SEQUENCES o_file_list ----
 o_file_list <- grep(pattern = "1_original_input", 
                     x = file_list, value = TRUE)
