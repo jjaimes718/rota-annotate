@@ -164,13 +164,9 @@ Once all jobs/tasks are completed. This step concatenates all results and genera
   - [Source Table] (***.src**)
   - [GenBank Submission Template] (***.sbt**)
 
-
-
-
 - **Table2asn Output:**
   - GenBank flatfile (***.gbf**)
   - Abstract Syntax Notation 1 (ASN.1) text file (***.sqn**)
-
 
 ---
 
