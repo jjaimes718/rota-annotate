@@ -89,9 +89,7 @@ if [ "$COUNT" -gt 0 ]; then
   rm ${outdir}/tmp.txt
 
   ## HEADERS
-  HEADERS=$(echo "qseqid pident length mismatch gaps qstart qend sstart send \
-    sframe evalue sacc host country date segment genotype def source \
-    gi"|sed 's/ /\t/g')
+  HEADERS=$(echo "qseqid pident length mismatch gaps qstart qend sstart send sframe evalue sacc host country date segment genotype def source gi"|sed 's/ /\t/g')
   
   ## PREPEND HEADERS TO BLAST OUTPUT
   sed -i "1i $HEADERS" $OUT_BLAST
@@ -100,9 +98,7 @@ else
   echo "$0: No BLAST hits for $IN_FASTA"
   
   ## ADD HEADERS TO EMPTY BLAST OUTPUT
-  HEADERS=$(echo "qseqid pident length mismatch gaps qstart qend sstart send \
-    sframe evalue sacc host country date segment genotype def source \
-    gi"|sed 's/ /\t/g')
+  HEADERS=$(echo "qseqid pident length mismatch gaps qstart qend sstart send sframe evalue sacc host country date segment genotype def source gi"|sed 's/ /\t/g')
   
   echo $HEADERS > $OUT_BLAST
 

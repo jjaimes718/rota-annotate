@@ -279,7 +279,7 @@ file <- list.files(path = in_dir,
                    recursive = TRUE, full.names = TRUE)
 
 
-## NOTE: Rerunning gb_submission_3.R may overwrite "SeqIDs" already submitted to GB 
+## NOTE: Rerunning may overwrite "SeqIDs" already submitted to GB 
 ## "Seq_IDs" are replaced by GB accessions
 if (any(str_detect(string = file, pattern = '(A|a)ccessions'))) {
   file_name <- file[str_which(string = file, pattern = '(A|a)ccessions')]
@@ -400,20 +400,30 @@ gene <- data.frame(gene, len_orf, orf.2, p_cov, stringsAsFactors = FALSE)
 # file_string <- paste0("\t\t", file_string , collapse = "\n")
 message("\n\t", "Reading input BLAST_1-NCBI nt results (IN_BLAST_1)...")
 
-blast_1 <- concat_tables(in_blast_1, header = TRUE)
+blast_1 <- concat_tables(in_blast_1, 
+                         header = TRUE)
+
 colnames(blast_1) <- paste0('blast_1_', colnames(blast_1))
 names(blast_1)[names(blast_1) == 'blast_1_qseqid'] <- 'seq.ID'
 
 ## TOP_5 HITS (BLAST_1)
+message("\n\t", "Generating a list of accessions from top 5 BLAST_1-NCBI nt results (IN_BLAST_1)...")
 x <- 5
-top_x <- get_top_x(df = blast_1, x = x, grp_by_col = 'seq.ID')
+top_x <- get_top_x(df = blast_1, 
+                   x = x, 
+                   grp_by_col = 'seq.ID')
 
 ## TOP_1 HITS (BLAST_1)
-blast_1 <- get_top_x(df = blast_1, x = 1, grp_by_col = 'seq.ID')
+blast_1 <- get_top_x(df = blast_1, 
+                     x = 1, 
+                     grp_by_col = 'seq.ID')
 
 ## SACC (BLAST_1 TOP_5 HITS)
-sacc <- get_sacc(df = top_x, sacc_col = 'blast_1_sacc')
-out_sacc <- paste0(out_dir, '/blast_1_top_', x, '_sacc.txt')
+sacc <- get_sacc(df = top_x, 
+                 sacc_col = 'blast_1_sacc')
+
+out_sacc <- paste0(out_dir, 
+                   '/blast_1_top_', x, '_sacc.txt')
 
 write.table(x = sacc, file = out_sacc, sep = '\t', row.names = FALSE, 
             col.names = FALSE, quote = FALSE)
@@ -436,7 +446,9 @@ rownames(freq) <- NULL
 
 ## blast_2 hits (genotype frequencies)
 hits <- data.frame()
+
 u_seq.ID <- unique(blast_2$seq.ID)
+
 for (i in 1:length(u_seq.ID)) {
   idx <- which(freq$seq.ID == u_seq.ID[i])
   sub_freq <- freq[idx,]

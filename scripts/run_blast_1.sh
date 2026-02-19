@@ -60,10 +60,7 @@ blastn -task megablast \
 	-max_target_seqs 20 \
 	-evalue .001 \
 	-num_threads $NSLOTS \
-	-outfmt "6 qseqid sskingdoms stitle sacc pident qlen length slen mismatch gaps \
-    qstart qend sstart send sframe evalue staxids sscinames scomnames sblastnames \
-    sseqid sallseqid sgi sallgi sallacc bitscore score nident positive gapopen \
-    ppos frames qframe salltitles sstrand qcovs qcovhsp qcovus"
+	-outfmt "6 qseqid sskingdoms stitle sacc pident qlen length slen mismatch gaps qstart qend sstart send sframe evalue staxids sscinames scomnames sblastnames sseqid sallseqid sgi sallgi sallacc bitscore score nident positive gapopen ppos frames qframe salltitles sstrand qcovs qcovhsp qcovus"
 
 ## COUNT
 COUNT=$(awk 'NR>1 {print}' $OUT_BLAST | wc -l)
@@ -72,15 +69,9 @@ if [ "$COUNT" -gt 0 ]; then
   # remove commas from blast output
   sed -i "s/,//g" $OUT_BLAST
   
-  ## HEADERS
-  HEADERS=$(echo "qseqid sskingdoms stitle sacc pident qlen length slen \
-    mismatch gaps qstart qend sstart send sframe evalue staxids sscinames \
-    scomnames sblastnames sseqid sallseqid sgi sallgi sallacc bitscore score \
-    nident positive gapopen ppos frames qframe salltitles sstrand qcovs \
-    qcovhsp qcovus" | sed 's/ /\t/g')
-  
-  ## PREPEND HEADERS TO BLAST OUTPUT
-  sed -i "1i $HEADERS" $OUT_BLAST
+HEADERS=$(echo "qseqid sskingdoms stitle sacc pident qlen length slen mismatch gaps qstart qend sstart send sframe evalue staxids sscinames scomnames sblastnames sseqid sallseqid sgi sallgi sallacc bitscore score nident positive gapopen ppos frames qframe salltitles sstrand qcovs qcovhsp qcovus"| sed 's/ /\t/g')
+
+sed -i "1i$HEADERS" "$OUT_BLAST"
 
 else
   echo "$0: No BLASTN hits for $IN_FASTA" > $OUT_BLAST
