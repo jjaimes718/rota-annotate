@@ -5,7 +5,9 @@ Analysis and annotation of rotavirus genome assemblies.
 
 ---
 
-## <u> About </u>
+## <u> Introduction </u>
+
+### Rotavirus Classification Working Group (RCWG)
 
 Since forming back in 2008, the [Rotavirus Classification Working Group] (RCWG) has developed guidelines for:
 
@@ -16,9 +18,40 @@ Although their adoption has enhanced uniformity in the description rotavirus str
 
 `rota-annotate` aims to automate generation of rotavirus sequence annotation with a workflow that minimizes user input, identifies rotavirus sequences, implemts proposed guidelines set forth by RCWG, and generates finalized sequence records suitable for GenBank submission.
 
+### RVA Genotype Classification
+
+![Flowchart summarizing the guidelines for genotype classification](<https://cdn.ncbi.nlm.nih.gov/pmc/blobs/8e87/2556306/2a3738bb9a0a/nihms-68906-f0001.jpg>)
+
+### Nucleotide Percentage Identity Cut-off Values
+
+| Gene | Nucleotide Percent Identity <br> Cutoff Values|
+| :----|:---------------------------------------------:|
+| VP7  | 80                                            |
+| VP4  | 80                                            |
+| VP6  | 85                                            |
+| VP1  | 83                                            |
+| VP2  | 84                                            |
+| VP3  | 81                                            |
+| NSP1 | 79                                            |
+| NSP2 | 85                                            |
+| NSP3 | 85                                            |
+| NSP4 | 85                                            |
+| NSP5 | 91                                            |
+
+### Rotavirus A "Genotype Constellation"
+The RVA genotype classification system assigns a specific genotype to each of the 11 genome segments according to the established [nucleotide percent identity cutoff values](#nucleotide-percentage-identity-cut-off-values) allowing for genome-wide descriptor commonly referred as a "**genotype constellation**":
+
+  - Where the following schematic nomenclatue:  **Gx**-**P[x]**-**Ix**-**Rx**-**Cx**-**Mx**-**Ax**-**Nx**-**Tx**-**Ex**-**Hx**
+  - Represents the genotypes for each of the gene segments (respectively):   **VP7**-**VP4**-**VP6**-**VP1**-**VP2**-**VP3**-**NSP1**-**NSP2**-**NSP3**-**NSP4**-**NSP5/6**
+   - With "**x**" indicating the numbers of the corresponding genotypes. 
+
+### Rotavirus Strain Nomenclature
+
+  > **RV group** / **species of origin** / **country of identification** / **common name** / **year of identification** / **G- and P-type**
+
 ---
 
-## <u> General Workflow </u>
+## <u> `rota-annotate` General Workflow </u>
 
 ![Rota-annotate workflow diagram](assets/images/Work_Flow.png)
 
@@ -47,7 +80,7 @@ Although their adoption has enhanced uniformity in the description rotavirus str
 - Create a project directory (**PROJECT_NAME**)
 - Create a 2 sub directories named: 
   - **1_original_input** - containing original **assembly** files (FASTA) and **read** files (FASTQ)
-  - **GenBank_Submission_Template** - containing completed submission template
+  - **[GenBank Submission Template]** (.sbt) - containing completed submission template
 
 ___
 
@@ -179,7 +212,7 @@ Once all jobs/tasks are completed. This step concatenates all results and genera
 [blastn]: <https://www.ncbi.nlm.nih.gov/books/NBK569856/>
 [nt]: <https://ftp.ncbi.nlm.nih.gov/blast/db/README>
 [Rotavirus Classification Working Group]: <https://rega.kuleuven.be/cev/viralmetagenomics/virus-classification/rcwg>
-[Matthijnssens et al., 2008]: https://pubmed.ncbi.nlm.nih.gov/18604469/
+[Matthijnssens et al., 2008]: <https://pmc.ncbi.nlm.nih.gov/articles/PMC2556306/>
 [Matthijnssens et al., 2011]: <https://pmc.ncbi.nlm.nih.gov/articles/PMC3398998/#abstract1>
 [Nucleotide sequence file]: <https://www.ncbi.nlm.nih.gov/genbank/table2asn/?utm_source=ncbi_insights&utm_medium=referral&utm_campaign=table2asn-updated-20230706#fsa>
 [Feature Table]: <https://www.ncbi.nlm.nih.gov/genbank/table2asn/?utm_source=ncbi_insights&utm_medium=referral&utm_campaign=table2asn-updated-20230706#tbl>
