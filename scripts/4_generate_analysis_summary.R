@@ -993,12 +993,14 @@ base_name <- paste0(table2asn_dir, '/' , project_name)
 
 ## ## TABLE2ASN df ----
 idx_1 <- which(summary_full$vigor_Gene != 'NSP6')
+df <- summary_full[idx_1,]
 
-idx_2 <- which(summary_full$included != 'no')
+idx_2 <- which(df$included != 'no')
+df <- df[idx_2,]
 
 #idx <- intersect(x = idx_1, idx_2)
-idx <- unique(idx_1, idx_2)
-df <- summary_full[idx,]
+
+
 
 ## ## TABLE2ASN .fsa ----
 Header <- df$final.header
@@ -1190,27 +1192,31 @@ summary_full$Notes[idx] <- ""
 for (i in 1:length(SeqID)) {
   idx <- which(summary_full$SeqID == SeqID[i])
   sub <- summary_full[idx,]
-  sink(file = out_feature,append = T)
-  cat(paste0('>Features', ' ', SeqID[i], '\n'))
-  for (j in 1:length(sub$vigor_Gene)) {
-    if (sub$included[j] == 'no') {
-      next(j)
+  idx <- which(sub$included == "yes")
+  sub <- sub[idx,]
+  if (length(idx) > 0 ) {
+    sink(file = out_feature,append = T)
+    cat(paste0('>Features', ' ', SeqID[i], '\n'))
+    for (j in 1:length(sub$vigor_Gene)) {
+      if (sub$included[j] == 'no') {
+        next(j)
+      }
+      cat(paste0(sub$start[j], '\t', sub$stop[j], '\t', 'gene', '\n'))
+      cat(paste0('\t\t\t', 'gene', '\t', sub$vigor_Gene[j], '\n'))
+      
+      cat(paste0(sub$start[j], '\t', sub$stop[j], '\t', 'CDS', '\n'))
+      cat(paste0('\t\t\t', 'codon_start', '\t', sub$vigor_Codon_Start[j], '\n'))
+      #cat(paste0('\t\t\t', 'protein_id', '\t', sub$gene.ID[j], '\n'))
+      cat(paste0('\t\t\t', 'gene', '\t', sub$vigor_Gene[j], '\n'))
+      cat(paste0('\t\t\t', 'product', '\t', sub$final.product[j], '\n'))
+      
+      # if (any(sub$Notes[j] != "")) {
+      #   note = sub$Notes[j]
+      #   cat(paste0('\t\t\t', 'note', '\t', note, '\n'))
+      # }
     }
-    cat(paste0(sub$start[j], '\t', sub$stop[j], '\t', 'gene', '\n'))
-    cat(paste0('\t\t\t', 'gene', '\t', sub$vigor_Gene[j], '\n'))
-  
-    cat(paste0(sub$start[j], '\t', sub$stop[j], '\t', 'CDS', '\n'))
-    cat(paste0('\t\t\t', 'codon_start', '\t', sub$vigor_Codon_Start[j], '\n'))
-    #cat(paste0('\t\t\t', 'protein_id', '\t', sub$gene.ID[j], '\n'))
-    cat(paste0('\t\t\t', 'gene', '\t', sub$vigor_Gene[j], '\n'))
-    cat(paste0('\t\t\t', 'product', '\t', sub$final.product[j], '\n'))
-  
-    if (str_detect(sub$Notes[j], 'further review|No notes', negate = T)) {
-      note = sub$Notes[j]
-      cat(paste0('\t\t\t', 'note', '\t', note, '\n'))
-    }
+    sink()
   }
-  sink()
 }
 
 ## SUMMARY OUT ----
@@ -1323,6 +1329,9 @@ addStyle(wb = wb, sheet = sheet_name,
 col_names <- setdiff(grep(pattern = 'vigor_', x = colnames(summary_out), value = T), 'vigor_ORF_ID')
 col_names <- c('NGS_RUN_ID', 'NGS_METHOD_ID', 'Assembly_ID', 'Assembly_N', 'NGS_ISOLATE_SN', 'NGS_ISOLATE', 'NGS_SN', 'NGS_N','SeqID', 'seq.ID', 'vigor_ORF_ID', col_names)
 vigor <- summary_out[col_names]
+vigor$vigor_file_name <- NULL
+vigor$vigor_ORF_NT <- NULL
+vigor$vigor_ORF_AA <- NULL
 
 ## WB blast_1 ----
 col_names <- setdiff(grep(pattern = 'blast_1_', x = colnames(summary_out), value = T), 
@@ -1480,3 +1489,4 @@ message("\n\t", "Saving analysis summary report...", "\n",
         "\t\t", "OUT_SUMMARY: ", out_summary)
 
 saveWorkbook(wb = wb, file = out_summary, overwrite = TRUE)
+
