@@ -65,6 +65,22 @@ vigor4 --version
 
 vigor4 --input-fasta $IN_FASTA --output-prefix ${PREFIX} --reference-database $VIGOR_DB
 
+## GFF3 output file from VIGOR4
+IN_GFF=$(find ${outdir} -type f -name "*.gff3")
+
+if [[ -s $IN_GFF ]]; then
+  OUT_CDS=${PREFIX}_GFF3_CDS.fas
+  OUT_PEP=${PREFIX}_GFF3_PEP.fas
+  echo -e "\nVIGOR4 GFF3 output file:\n$IN_GFF\n"
+  gffread  $IN_GFF -g $IN_FASTA -x ${OUT_CDS} -y ${OUT_PEP}
+  OUT_FAS_FAI=${IN_FASTA}.fai
+  if [[ -s $OUT_FAS_FAI ]]; then
+    rm ${OUT_FAS_FAI}
+  fi
+else
+  echo -e "\nError: VIGOR4 GFF3 output file not found or is empty.\n"
+fi
+
 ## PARSE VIGOR4 OUTPUT
 ./scripts/parse_vigor4_output.R --in_dir ${outdir}
 
