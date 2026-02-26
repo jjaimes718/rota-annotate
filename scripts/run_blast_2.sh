@@ -21,7 +21,7 @@ mkdir -p ${outdir}
 exec >"$outdir/stdout.txt" 2>"$outdir/stderr.txt"
 
 ## BLAST_DB
-BLAST_DB="./db/rv_virus_variation/rv_virus_variation.fasta"
+BLAST_DB="./db/RVA/RVA.fasta"
 
 ## TYPE (nucl or prot)
 TYPE=nucl
