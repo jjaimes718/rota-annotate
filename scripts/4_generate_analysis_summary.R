@@ -954,12 +954,20 @@ summary_full$final.header <- paste0(summary_full$SeqID, ' ',
 
 ## GC_SEQUENCE ----
 message("\n\t", "Calculating %GC by sequence (GC_SEQUENCE)...")
-GC_SeqID <- data.frame('Assembly_ID' = summary_full$Assembly_ID, 
+GC_SeqID <- data.frame("NGS_INSTRUMENT_ID" = summary_full$NGS_INSTRUMENT_ID,
+                       "NGS_METHOD_ID" = summary_full$NGS_METHOD_ID,
+                       "Assembly_ID" = summary_full$Assembly_ID,
+                       "Assembly_N" = summary_full$Assembly_N,
+                       "NGS_ISOLATE_SN" = summary_full$NGS_ISOLATE_SN,
+                       "NGS_ISOLATE" = summary_full$NGS_ISOLATE,
+                       "NGS_SN" = summary_full$NGS_SN,
+                       "NGS_N" = summary_full$NGS_N,
+                       'strain' = summary_full$strain,
                        'SeqID' = summary_full$SeqID,
                        'seq.ID' = summary_full$seq.ID,
-                       'strain' = summary_full$strain,
                        lapply(summary_full$Sequence, FUN = get_GC_content) %>% 
                          bind_rows())
+
 summary_full$GC_SeqID <- GC_SeqID$GC
 
 GC_SeqID <- GC_SeqID[which(!duplicated(GC_SeqID$SeqID)),]
@@ -970,12 +978,19 @@ split_summary_full <- summary_full[which(!duplicated(summary_full$SeqID)),]
 split_summary_full <- split(x = split_summary_full, 
                             f = split_summary_full$Assembly_ID)
 
-GC_Assembly <- data.frame('Assembly_ID' = lapply(split_summary_full, "[[", "Assembly_ID") %>%
-                            lapply(FUN = unique) %>% 
-                            unlist(use.names = FALSE),
+GC_Assembly <- data.frame("NGS_INSTRUMENT_ID" = lapply(split_summary_full, "[[", "NGS_INSTRUMENT_ID") %>% lapply(FUN = unique) %>% unlist(use.names = FALSE),
+                          "NGS_METHOD_ID" = lapply(split_summary_full, "[[", "NGS_METHOD_ID") %>% lapply(FUN = unique) %>% unlist(use.names = FALSE),
+                          "Assembly_ID" = lapply(split_summary_full, "[[", "Assembly_ID") %>% lapply(FUN = unique) %>% unlist(use.names = FALSE),
+                          "Assembly_N" = lapply(split_summary_full, "[[", "Assembly_N") %>% lapply(FUN = unique) %>% unlist(use.names = FALSE),
+                          "NGS_ISOLATE_SN" = lapply(split_summary_full, "[[", "NGS_ISOLATE_SN") %>% lapply(FUN = unique) %>% unlist(use.names = FALSE),
+                          "NGS_ISOLATE" = lapply(split_summary_full, "[[", "NGS_ISOLATE") %>% lapply(FUN = unique) %>% unlist(use.names = FALSE),
+                          "NGS_SN" = lapply(split_summary_full, "[[", "NGS_SN") %>% lapply(FUN = unique) %>% unlist(use.names = FALSE),
+                          "NGS_N" = lapply(split_summary_full, "[[", "NGS_N") %>% lapply(FUN = unique) %>% unlist(use.names = FALSE),
+                          "strain" = lapply(split_summary_full, "[[", "strain") %>% lapply(FUN = unique) %>% unlist(use.names = FALSE),
                           sapply(split_summary_full,
-                                function(x) apply(x[c("Sequence")], 2, get_GC_content)) %>%
+                                 function(x) apply(x[c("Sequence")], 2, get_GC_content)) %>%
                             bind_rows())
+
 
 c_table <- merge(x = c_table, y = GC_Assembly[c('Assembly_ID', 'GC', 'nTotal')], 
                  by = 'Assembly_ID', all = TRUE, sort = FALSE)
@@ -1024,13 +1039,11 @@ fas <- build_fas(Header = Header, Sequence = Sequence)
 out_fas <- paste0(base_name, '_ORF_AA.fas')
 writeFasta(fdta = fas, out.file = out_fas)
 
-## OUTPUT SEQUENCES By Segment ----
-seq_dir <- paste0(output_seq_dir, "/by_segment")
-dir.create(path = seq_dir, 
-           showWarnings = FALSE, recursive = TRUE)
+## OUTPUT SEQUENCES by GENE ----
+df$GENE <- paste(df$NGS_INSTRUMENT_ID, df$NGS_RUN_ID, df$NGS_METHOD_ID, "by_GENE",
+                 df$vigor_Gene, sep = "/")
+by_name <- "GENE"
 
-df$run_gene <- paste0(df$NGS_RUN_ID, "__", df$NGS_METHOD_ID, "__", df$vigor_Gene)
-by_name <- "run_gene"
 u_name <- df[[by_name]] %>% unique()
 
 for(i in 1:length(u_name)) {
@@ -1038,8 +1051,8 @@ for(i in 1:length(u_name)) {
   sub_df <- df[k,]
   
   ## Full-length
-  in_col_names <- c("NGS_RUN_ID", "NGS_METHOD_ID", "Assembly_ID", "SeqID", 
-                    "seq.ID", "vigor_ORF_ID", "vigor_Gene", "vigor_ORF", 
+  in_col_names <- c("NGS_INSTRUMENT_ID", "NGS_RUN_ID", "NGS_METHOD_ID", "Assembly_ID",
+                    "SeqID", "seq.ID", "vigor_ORF_ID", "vigor_Gene", "vigor_ORF", 
                     "final.genotype", "vigor_Location", "vigor_Codon_Start",
                     "constellation_final.genotype")
   
@@ -1052,12 +1065,22 @@ for(i in 1:length(u_name)) {
                    str_remove_all(sub_df$strain, pattern = "\\[|\\]"))
   
   Header <- paste0(Header, " ", header_info)
-  Sequence <- sub_df$Sequence
+  Sequence <- sub_df$vigor_Sequence_forward
   
   fas <- build_fas(Header = Header, 
                    Sequence = Sequence)
-  out_fas <- paste0(seq_dir, '/', 
-                    u_name[i], '__FULL-LENGTH.fas')
+  
+  dir_out <- paste0(output_seq_dir, "/", u_name[i])
+  
+  dir.create(path = dir_out, 
+             showWarnings = FALSE, recursive = TRUE)
+  
+  b_name <- str_split_fixed(string = u_name[i], 
+                               pattern = "/", n = 5)[,5]
+  
+  out_fas <- paste0(dir_out, '/', 
+                    b_name, '_FULL-LENGTH.fas')
+  
   writeFasta(fdta = fas, out.file = out_fas)
   
   ## ORF_NT
@@ -1074,28 +1097,27 @@ for(i in 1:length(u_name)) {
   
   fas <- build_fas(Header = Header, 
                    Sequence = Sequence)
-  out_fas <- paste0(seq_dir, '/',
-                    u_name[i], '__ORF_NT.fas')
+  
+  out_fas <- paste0(dir_out, '/',
+                    b_name, '_ORF_NT.fas')
+  
   writeFasta(fdta = fas, out.file = out_fas)
   
   ## ORF_AA
   Sequence <- sub_df$vigor_ORF_AA
   fas <- build_fas(Header = Header, 
                    Sequence = Sequence)
-  out_fas <- paste0(seq_dir, '/',
-                    u_name[i], '__ORF_AA.fas')
+  out_fas <- paste0(dir_out, '/',
+                    b_name, '_ORF_AA.fas')
   writeFasta(fdta = fas, out.file = out_fas)
 }
 
-## OUTPUT SEQUENCES By Sample ----
-seq_dir <- paste0(output_seq_dir, "/by_sample")
-dir.create(path = seq_dir, 
-           showWarnings = FALSE, recursive = TRUE)
 
-df$run_sample <- paste0(df$NGS_RUN_ID, "__", 
-                        df$NGS_METHOD_ID, "__", 
-                        df$Assembly_ID)
-by_name <- "run_sample"
+## OUTPUT SEQUENCES by SAMPLE ----
+df$SAMPLE <- paste(df$NGS_INSTRUMENT_ID, df$NGS_RUN_ID, df$NGS_METHOD_ID, "by_SAMPLE",
+                 df$Assembly_ID, sep = "/")
+
+by_name <- "SAMPLE"
 u_name <- df[[by_name]] %>% unique()
 
 for(i in 1:length(u_name)) {
@@ -1103,8 +1125,8 @@ for(i in 1:length(u_name)) {
   sub_df <- df[k,]
   
   ## Full-length
-  in_col_names <- c("NGS_RUN_ID", "NGS_METHOD_ID", "Assembly_ID", "SeqID", 
-                    "seq.ID", "vigor_ORF_ID", "vigor_Gene", "vigor_ORF", 
+  in_col_names <- c("NGS_INSTRUMENT_ID", "NGS_RUN_ID", "NGS_METHOD_ID", "Assembly_ID",
+                    "SeqID", "seq.ID", "vigor_ORF_ID", "vigor_Gene", "vigor_ORF", 
                     "final.genotype", "vigor_Location", "vigor_Codon_Start",
                     "constellation_final.genotype")
   
@@ -1117,12 +1139,22 @@ for(i in 1:length(u_name)) {
                    str_remove_all(sub_df$strain, pattern = "\\[|\\]"))
   
   Header <- paste0(Header, " ", header_info)
-  Sequence <- sub_df$Sequence
+  Sequence <- sub_df$vigor_Sequence_forward
   
   fas <- build_fas(Header = Header, 
                    Sequence = Sequence)
-  out_fas <- paste0(seq_dir, '/', 
-                    u_name[i], '__FULL-LENGTH.fas')
+  
+  dir_out <- paste0(output_seq_dir, "/", u_name[i])
+  
+  dir.create(path = dir_out, 
+             showWarnings = FALSE, recursive = TRUE)
+  
+  b_name <- str_split_fixed(string = u_name[i], 
+                               pattern = "/", n = 5)[,5]
+  
+  out_fas <- paste0(dir_out, '/', 
+                    b_name, '_FULL-LENGTH.fas')
+  
   writeFasta(fdta = fas, out.file = out_fas)
   
   ## ORF_NT
@@ -1139,17 +1171,18 @@ for(i in 1:length(u_name)) {
   
   fas <- build_fas(Header = Header, 
                    Sequence = Sequence)
-  out_fas <- paste0(seq_dir, '/',
-                    u_name[i], '__ORF_NT.fas')
+  
+  out_fas <- paste0(dir_out, '/',
+                    b_name, '_ORF_NT.fas')
+  
   writeFasta(fdta = fas, out.file = out_fas)
   
   ## ORF_AA
   Sequence <- sub_df$vigor_ORF_AA
-  
   fas <- build_fas(Header = Header, 
                    Sequence = Sequence)
-  out_fas <- paste0(seq_dir, '/',
-                    u_name[i], '__ORF_AA.fas')
+  out_fas <- paste0(dir_out, '/',
+                    b_name, '_ORF_AA.fas')
   writeFasta(fdta = fas, out.file = out_fas)
 }
 
@@ -1254,7 +1287,7 @@ c_colnames <- c('NGS_INSTRUMENT_ID', 'NGS_RUN_ID', 'NGS_METHOD_ID',
                 'ORF.Complete', 'ORF.Partial', 
                 'Missing', 'GC_Assembly', 'Total.Length.NT')
 
-## Keep all columns. Append behing c_colnames
+## Keep all columns. Append to c_colnames
 # c_colnames <- c(c_colnames, 
 #                 setdiff(x = colnames(c_table),
 #                         y = c_colnames))
@@ -1285,6 +1318,8 @@ for (i in 1:length(col_name)) {
   c_table[[col_name[i]]] <- str_remove_all(string = string, 
                                            pattern = pattern)
 }
+
+
 
 
 ## WB ----
@@ -1326,64 +1361,106 @@ addStyle(wb = wb, sheet = sheet_name,
 
 
 ## WB vigor ----
-col_names <- setdiff(grep(pattern = 'vigor_', x = colnames(summary_out), value = T), 'vigor_ORF_ID')
-col_names <- c('NGS_RUN_ID', 'NGS_METHOD_ID', 'Assembly_ID', 'Assembly_N', 'NGS_ISOLATE_SN', 'NGS_ISOLATE', 'NGS_SN', 'NGS_N','SeqID', 'seq.ID', 'vigor_ORF_ID', col_names)
+col_names <- setdiff(x = grep(pattern = 'vigor_', x = colnames(summary_out), value = T), 
+                     y = 'vigor_ORF_ID')
+
+col_names <- c("NGS_INSTRUMENT_ID", "NGS_METHOD_ID", "Assembly_ID", "Assembly_N",
+               "NGS_ISOLATE_SN", "NGS_ISOLATE", "NGS_SN", "NGS_N", "strain", 
+               "SeqID", "seq.ID", "vigor_ORF_ID", col_names)
+
 vigor <- summary_out[col_names]
 vigor$vigor_file_name <- NULL
+vigor$vigor_Sequence_forward <- NULL
 vigor$vigor_ORF_NT <- NULL
 vigor$vigor_ORF_AA <- NULL
 
 ## WB blast_1 ----
-col_names <- setdiff(grep(pattern = 'blast_1_', x = colnames(summary_out), value = T), 
-                     c('blast_1_stitle', 'blast_1_sacc', 'blast_1_pident'))
-col_names <- c('NGS_RUN_ID', 'NGS_METHOD_ID', 'Assembly_ID', 'Assembly_N', 'NGS_ISOLATE_SN', 'NGS_ISOLATE', 'NGS_SN', 'NGS_N','SeqID', 'seq.ID','blast_1_stitle', 'blast_1_sacc', 'blast_1_pident', col_names)
+col_names <- setdiff(x = grep(pattern = 'blast_1_', x = colnames(summary_out), value = T), 
+                     y = c('blast_1_stitle', 'blast_1_sacc', 'blast_1_pident'))
+
+col_names <- c("NGS_INSTRUMENT_ID", "NGS_METHOD_ID", "Assembly_ID", "Assembly_N", 
+               "NGS_ISOLATE_SN", "NGS_ISOLATE", "NGS_SN", "NGS_N", "strain", 
+               "SeqID", "seq.ID","blast_1_stitle", "blast_1_sacc", 
+               "blast_1_pident", col_names)
+
 blast_1 <- summary_out[col_names]
 blast_1 <- blast_1[!duplicated(blast_1$SeqID),]
 
 ## WB blast_2 ----
-col_names <- setdiff(grep(pattern = 'blast_2_', x = colnames(summary_out), value = T), 
-                     c('blast_2_def', 'blast_2_sacc', 'blast_2_pident', 'blast_2_segment', 'blast_2_genotype'))
-col_names <- c('NGS_RUN_ID', 'NGS_METHOD_ID', 'Assembly_ID', 'Assembly_N', 'NGS_ISOLATE_SN', 'NGS_ISOLATE', 'NGS_SN', 'NGS_N','SeqID', 'seq.ID', 'blast_2_segment', 'blast_2_sacc', 'blast_2_genotype','blast_2_def', 'blast_2_pident', col_names)
+col_names <- setdiff(x = grep(pattern = 'blast_2_', x = colnames(summary_out), value = T), 
+                     y = c('blast_2_def', 'blast_2_sacc', 'blast_2_pident', 'blast_2_segment', 'blast_2_genotype'))
+
+col_names <- c("NGS_INSTRUMENT_ID", "NGS_METHOD_ID", "Assembly_ID", "Assembly_N", 
+               "NGS_ISOLATE_SN", "NGS_ISOLATE", "NGS_SN", "NGS_N", "strain",
+               "SeqID", "seq.ID", "blast_2_segment", "blast_2_sacc", 
+               "blast_2_genotype","blast_2_def", "blast_2_pident", col_names)
+
 blast_2 <- summary_out[col_names]
 blast_2 <- blast_2[!duplicated(blast_2$SeqID),]
 
-## WB bowtie ----
+## WB BOWTIE_SEQUENCE ----
 if (length(in_bowtie) > 0) {
   col_names <- grep(pattern = 'bowtie_', x = colnames(summary_out), value = T)
-  col_names <- c('NGS_RUN_ID', 'NGS_METHOD_ID', 'Assembly_ID', 'Assembly_N', 'NGS_ISOLATE_SN', 'NGS_ISOLATE', 'NGS_SN', 'NGS_N','SeqID', 'seq.ID', col_names)
+  
+  col_names <- c("NGS_INSTRUMENT_ID", "NGS_METHOD_ID", "Assembly_ID", "Assembly_N", 
+                 "NGS_ISOLATE_SN", "NGS_ISOLATE", "NGS_SN", "NGS_N", "strain", 
+                 "SeqID", "seq.ID", col_names)
+  
   bowtie <- summary_out[col_names]
   bowtie <- bowtie[!duplicated(bowtie$SeqID),]
 }
 
+## WB BOWTIE_ASSEMBLY ----
+if (length(in_depth) > 0) {
+  names(depth)[names(depth) == "bowtie_BASE_NAME"] <- "Assembly_ID"
+  assembly_info <- c_table[c("NGS_INSTRUMENT_ID", "NGS_METHOD_ID", "Assembly_ID", 
+                             "Assembly_N", "NGS_ISOLATE_SN", "NGS_ISOLATE", 
+                             "NGS_SN", "NGS_N", "strain")]
+  
+  col_names <- setdiff(x = colnames(depth), 
+                       y = c("NGS_INSTRUMENT_ID", "NGS_METHOD_ID", "Assembly_ID", 
+                             "Assembly_N", "NGS_ISOLATE_SN", "NGS_ISOLATE", 
+                             "NGS_SN", "NGS_N", "strain"))
+  
+  col_names <- c("NGS_INSTRUMENT_ID", "NGS_METHOD_ID", "Assembly_ID", "Assembly_N",
+                 "NGS_ISOLATE_SN", "NGS_ISOLATE", "NGS_SN", "NGS_N", 
+                 "strain", col_names)
+  
+  depth <- merge(x = assembly_info , y = depth, by = "Assembly_ID", 
+                 sort = FALSE, all.y = TRUE)
+  
+  depth <- depth[col_names]
+}
+
 if (length(in_bowtie) > 0) {
   
-  col_names <- c('NGS_RUN_ID', 'NGS_METHOD_ID', 'Assembly_N', 'Assembly_ID', 
-                 'NGS_ISOLATE_SN', 'NGS_ISOLATE', 'NGS_SN', 'NGS_N',
-                 'SeqID', 'seq.ID','vigor_ORF_ID', 'Notes', 'included', 
-                 'vigor_Gene','final.genotype', 'vigor_ORF', 'cutoff', 
-                 'blast_2_genotype', 'blast_2_pident', 'Length_SeqID_NT', 
-                 'vigor_Length_ORF_NT', 'vigor_Length_ORF_AA', 
-                 'vigor_Percent_Coverage', 'vigor_Location', 'vigor_Product', 
-                 'bowtie_numreads', 'bowtie_meandepth', 
-                 'blast_1_sacc', 'blast_1_stitle', 
-                 'blast_2_sacc', 'blast_2_def', 'final.header', 'original_header')
+  col_names <- c("NGS_INSTRUMENT_ID", "NGS_METHOD_ID", "Assembly_ID", "Assembly_N", 
+                 "NGS_ISOLATE_SN", "NGS_ISOLATE", "NGS_SN", "NGS_N", "strain",
+                 "SeqID", "seq.ID","vigor_ORF_ID", "Notes", "included", 
+                 "vigor_Gene","final.genotype", "vigor_ORF", "cutoff", 
+                 "blast_2_genotype", "blast_2_pident", "Length_SeqID_NT", 
+                 "vigor_Length_ORF_NT", "vigor_Length_ORF_AA", 
+                 "vigor_Percent_Coverage", "vigor_Location", "vigor_Product", 
+                 "bowtie_numreads", "bowtie_meandepth", 
+                 "blast_1_sacc", "blast_1_stitle", 
+                 "blast_2_sacc", "blast_2_def", "final.header", "original_header")
   summary_out <- summary_out[col_names]
 } else {
-  col_names <- c('NGS_RUN_ID', 'NGS_METHOD_ID', 'Assembly_N', 'Assembly_ID', 
-                 'NGS_ISOLATE_SN', 'NGS_ISOLATE', 'NGS_SN', 'NGS_N',
-                 'SeqID', 'seq.ID', 'vigor_ORF_ID', 'Notes', 'included', 
-                 'vigor_Gene','final.genotype', 'vigor_ORF', 'cutoff', 
-                 'blast_2_genotype', 'blast_2_pident', 'Length_SeqID_NT', 
-                 'vigor_Length_ORF_NT', 'vigor_Length_ORF_AA', 
-                 'vigor_Percent_Coverage', 'vigor_Location', 'vigor_Product',
-                 'blast_1_sacc', 'blast_1_stitle', 
-                 'blast_2_sacc', 'blast_2_def', 'final.header', 'original_header')
+  col_names <- c("NGS_INSTRUMENT_ID", "NGS_METHOD_ID", "Assembly_ID", "Assembly_N", 
+                 "NGS_ISOLATE_SN", "NGS_ISOLATE", "NGS_SN", "NGS_N", "strain",
+                 "SeqID", "seq.ID", "vigor_ORF_ID", "Notes", "included", 
+                 "vigor_Gene","final.genotype", "vigor_ORF", "cutoff", 
+                 "blast_2_genotype", "blast_2_pident", "Length_SeqID_NT", 
+                 "vigor_Length_ORF_NT", "vigor_Length_ORF_AA", 
+                 "vigor_Percent_Coverage", "vigor_Location", "vigor_Product",
+                 "blast_1_sacc", "blast_1_stitle", 
+                 "blast_2_sacc", "blast_2_def", "final.header", "original_header")
   
   summary_out <- summary_out[col_names]
 }
 
 ## WB sheets ----
-sheet_name <- 'SUMMARY'
+sheet_name <- "SUMMARY"
 x <- summary_out
 addWorksheet(wb = wb, sheetName = sheet_name)
 writeDataTable(wb = wb, sheet = sheet_name, x = x, 
