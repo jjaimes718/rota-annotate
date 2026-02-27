@@ -82,6 +82,6 @@ else
 fi
 
 ## PARSE VIGOR4 OUTPUT
-./scripts/parse_vigor4_output.R --in_dir ${outdir}
+./scripts/parse_vigor4_output.R --fasta $IN_FASTA --in_dir $outdir
 
 conda deactivate

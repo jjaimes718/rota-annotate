@@ -18,6 +18,10 @@ invisible(lapply(required_pkgs, function(pkg) {
 
 ## OPTIONS ----
 option_list <- list(
+  make_option(c("-f", "--fasta"), 
+              type = "character", 
+              help = "Input sequence file (FASTA)"),
+  
   make_option(c("-i", "--in_dir"), 
               type = "character", 
               help = "Directory containing VIGOR results")
@@ -25,6 +29,18 @@ option_list <- list(
 
 opt_parser <- OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser)
+
+# Check if in_dir is provided
+if (is.null(opt$fasta)) {
+  print_help(opt_parser)
+  stop("Input sequence file (fasta) is required.")
+}
+
+# Check if in_dir is exists
+if (!file.exists(opt$fasta)) {
+  print_help(opt_parser)
+  stop("Input sequence file (fasta) does not exist.")
+}
 
 # Check if in_dir is provided
 if (is.null(opt$in_dir)) {
@@ -38,9 +54,12 @@ if (!dir.exists(opt$in_dir)) {
   stop("Input directory (in_dir) is does not exist.")
 }
 
-## IN_DIR ----
-# in_dir <- "~/projects/rota-annotate/data/2026-01-29_RESULTS/2_analysis_input/1/vigor4"
+## IN_DIR & IN_FASTA ----
+in_fasta <- opt$fasta
 in_dir <- opt$in_dir
+
+# in_dir <- "~/projects/rota-annotate/data/TEST_DATA/2_analysis_input/1/vigor"
+# in_fasta <- "~/projects/rota-annotate/data/TEST_DATA/2_analysis_input/1/Assembly_1-3101566450_S2.fas"
 
 ## FUNCTIONS ----
 splitAt <- function(x, pos) unname(split(x, cumsum(seq_along(x) %in% pos)))
@@ -263,9 +282,16 @@ cds$Location <- str_extract(string = cds$Header,
                             pattern = "location=\\S*") %>% 
   str_remove(pattern = "location=")
 
+cds$Location_Start <- str_extract(string = cds$Location, pattern = '^<*[0-9]+') %>% 
+  str_extract(pattern = "[0-9]+$") %>% 
+  as.numeric()
+
+cds$Location_Stop <- str_extract(string = cds$Location,pattern = '>*[0-9]+$') %>% 
+  str_extract(pattern = "[0-9]+$") %>% 
+  as.numeric()
+
 ## CDS Codon_Start ----
-cds$Codon_Start <- str_extract(string = cds$Header, 
-                               pattern = "codon_start=\\S*") %>% 
+cds$Codon_Start <- str_extract(string = cds$Header, pattern = "codon_start=\\S*") %>% 
   str_remove(pattern = "codon_start=")
 
 ## CDS Gene ----
@@ -290,13 +316,29 @@ cds$Length_ORF_NT <- str_length(string = cds$ORF_NT)
 ## CDS Length_ORF_AA ----
 cds$Length_ORF_AA <- str_length(string = cds$ORF_AA)
 
-## CDS Merge ----
+## CDS Merge rpt_gene and CDS ----
 by <- intersect(x = colnames(rpt_gene), 
                 y = colnames(cds))
 
 rpt_gene <- full_join(x = rpt_gene, 
                       y = cds, 
                       by = by)
+
+rpt_gene$seq.ID <- str_remove(string = rpt_gene$ORF_ID, 
+                              pattern = "\\.[:alnum:]+$")
+
+## FASTA ----
+fasta <- readFasta(in.file = in_fasta)
+colnames(fasta) <- c("seq.ID", "Sequence_forward")
+
+## FASTA Merge rpt_gene and fasta ----
+rpt_gene <- merge(x = rpt_gene, 
+                  y = fasta, 
+                  by = "seq.ID", all.x = TRUE, sort = FALSE)
+
+idx <- which(rpt_gene$Location_Start > rpt_gene$Location_Stop)
+
+rpt_gene$Sequence_forward[idx] <- reverseComplement(rpt_gene$Sequence_forward[idx])
 
 ## ORF Complete ----
 rpt_gene$ORF <- NA
@@ -358,7 +400,7 @@ col_order <-  c("Seq_ID", "ORF_ID", "Notes", "ORF", "Gene", "Product", "Location
                 "Codon_Start", "Length_ORF_NT", "Length_ORF_AA", "Ref_DB", 
                 "Ref_ID", "Percent_Identity", "Percent_Similarity", 
                 "Percent_Coverage", "T5", "Gap", "T3", "file_name", 
-                "ORF_NT", "ORF_AA")
+                "Sequence_forward", "ORF_NT", "ORF_AA")
 
 rpt_gene <- rpt_gene[col_order]
 
