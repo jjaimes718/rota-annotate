@@ -18,13 +18,13 @@ Although their adoption has enhanced uniformity in the description rotavirus str
 
 `rota-annotate` aims to automate generation of rotavirus sequence annotation with a workflow that minimizes user input, identifies rotavirus sequences, implemts proposed guidelines set forth by RCWG, and generates finalized sequence records suitable for GenBank submission.
 
-### RVA Genotype Classification
+### Rotavirus A Genotype Classification
 
 ![Flowchart summarizing the guidelines for genotype classification](<https://cdn.ncbi.nlm.nih.gov/pmc/blobs/8e87/2556306/2a3738bb9a0a/nihms-68906-f0001.jpg>)
 
-### Nucleotide Percentage Identity Cut-off Values
+#### Nucleotide Percent Identity Cut-off Values
 
-| Gene | Nucleotide Percent Identity <br> Cutoff Values|
+| Gene | Nucleotide Percent Identity <br> Cut-off Values|
 | :----|:---------------------------------------------:|
 | VP7  | 80                                            |
 | VP4  | 80                                            |
@@ -38,10 +38,19 @@ Although their adoption has enhanced uniformity in the description rotavirus str
 | NSP4 | 85                                            |
 | NSP5 | 91                                            |
 
-### Rotavirus A "Genotype Constellation"
+#### Genotype Classification of Partial ORF Sequences
+
+Partial gene sequences must meet **all three** of the following criteria to receive a final genotype assignment:
+
+  1. At least 50% of the ORF sequence must be determined.
+  2. At least 500 nt of the ORF should be determined.
+  3. Nucleotide identity must be 2% above the appropriate cut-off value.
+
+#### Rotavirus A "Genotype Constellation"
+
 The RVA genotype classification system assigns a specific genotype to each of the 11 genome segments according to the established [nucleotide percent identity cutoff values](#nucleotide-percentage-identity-cut-off-values) allowing for genome-wide descriptor commonly referred as a "**genotype constellation**":
 
-  - Where the following schematic nomenclatue:  **Gx**-**P[x]**-**Ix**-**Rx**-**Cx**-**Mx**-**Ax**-**Nx**-**Tx**-**Ex**-**Hx**
+  - Where the following schematic:  **Gx**-**P[x]**-**Ix**-**Rx**-**Cx**-**Mx**-**Ax**-**Nx**-**Tx**-**Ex**-**Hx**
   - Represents the genotypes for each of the gene segments (respectively):   **VP7**-**VP4**-**VP6**-**VP1**-**VP2**-**VP3**-**NSP1**-**NSP2**-**NSP3**-**NSP4**-**NSP5/6**
    - With "**x**" indicating the numbers of the corresponding genotypes. 
 
@@ -113,7 +122,7 @@ At the moment, the code is executed in 5 dfferent steps.
 | **host.common** | Refers to species of origin common name (first component) as described by [Matthijnssens et al., 2011]  <br><br> {*RV group*} / {***species of origin***} / {*country of identification*} / {*common name*} / {*year of identification*} / {*G-type*}{*P-type*}<br><br> Ex: RVA/**Human**-wt/USA/OM46/1998/G9P[8] |
 | **type** | Refers to species of origin sample type (second component) as described by [Matthijnssens et al., 2011] <br><br> {*RV group*} / {***species of origin***} / {*country of identification*} / {*common name*} / {*year of identification*} / {*G-type*}{*P-type*} <br><br> Ex: RVA/Human-**wt**/USA/OM46/1998/G9P[8] <br><br> Where *"**wt**"=wild type, "**tc**"=tissue-culture adapted, "**lab**"=lab-genereated or lab-engineered, "**X**"=unknown* |
 | **common_name.prefix** | Optional prefix for "common name" component of proposed rotavirus strain nomenclature as described by [Matthijnssens et al., 2011]: <br><br> {*RV group*} / {*species of origin*} / {*country of identification*} / {***common name***} / {*year of identification*} / {*G-type*}{*P-type*} <br><br> Ex: RVA/Human-wt/HUN/**BP**1062/2004/G8P[14] <br><br> Where ***common_name.prefix***="BP" results in ***common name***="**BP**1062" |
-| **isolation.source** | Describes the physical, environmental and/or local geographical source of the biological sample from which the sequence was derived (equivalent to GenBank source modifier [Isolation_source] |
+| **isolation.source** | Describes the physical, environmental and/or local geographical source of the biological sample from which the sequence was derived (equivalent to GenBank source modifier [Isolation_source]) |
 
 ### 2. Setup Analysis Input/Output
 
