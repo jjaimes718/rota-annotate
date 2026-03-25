@@ -580,7 +580,7 @@ for (i in 1:length(summary$vigor_ORF_ID)) {
   ## Variable blast_2_genotype hits
   if (isTRUE(str_detect(summary$blast_2_note[i], 'Variable'))) {
     included[i] = "yes"
-    summary$note[i] <- paste0(summary$note[i], '; ',summary$blast_2_note[i])
+    summary$Notes[i] <- paste0(summary$Notes[i], '; ',summary$blast_2_note[i])
   }
   
   ## Non-RVA
@@ -602,6 +602,13 @@ for (i in 1:length(summary$vigor_ORF_ID)) {
   
   ## GENOTYPING complete ORF----
   if (summary$orf.2[i] == 'complete') {
+    if (summary$len_orf[i] < 500) {
+      note <- paste0(summary$vigor_Gene[i], " (", summary$vigor_ORF_ID[i], ') cannot be classified because ', paste0("ORF length (", summary$len_orf[i], " nt) < 500 nt"))
+      
+      summary$Notes[i] <- paste0("; ", note)
+      included[i] = "no"
+      next(i)
+    }
     ## if blast_2_pi >= cutoff, assign blast_2_genotype as genotype
     if (summary$blast_2_pident[i] >= summary$cutoff[i]) {   
       included[i] = "yes"
