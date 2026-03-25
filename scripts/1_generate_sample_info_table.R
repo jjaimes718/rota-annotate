@@ -168,7 +168,7 @@ for (i in 1:length(a_dir)) {
   a_files <- data.frame(file_name)
   
   a_files$NGS_ISOLATE_SN <-  basename(file_name) %>% 
-    str_extract(pattern = "^.+_S[0-9]+_") %>% 
+    str_extract(pattern = "^.+_S[0-9]+_*") %>% 
     str_remove(pattern = '_$')
   
   NGS_ISOLATE_SN <- unique(a_files$NGS_ISOLATE_SN)
