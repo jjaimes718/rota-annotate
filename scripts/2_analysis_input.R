@@ -243,7 +243,7 @@ fasta <- rename_col(df = fasta,
 fasta$in_assembly <- fasta$file_name
 
 ## INPUT_ORIGINAL_SEQUENCES ----
-freq <- count(df = fasta, vars = "in_assembly")
+freq <- plyr::count(df = fasta, vars = "in_assembly")
 
 freq <- rename_col(df = freq, 
                    old_name = "freq", 
@@ -297,7 +297,7 @@ idx <- which(fasta$percent_N <= 50)
 fasta <- fasta[idx,]
 
 ## ANALYSIS_INPUT ----
-freq <- count(df = fasta, vars = "in_assembly")
+freq <- plyr::count(df = fasta, vars = "in_assembly")
 freq <- rename_col(df = freq, 
                    old_name = "freq", 
                    new_name = "analysis_input")
