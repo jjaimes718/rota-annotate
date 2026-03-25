@@ -16,7 +16,7 @@ Since forming back in 2008, the [Rotavirus Classification Working Group] (RCWG) 
 
 Although their adoption has enhanced uniformity in the description rotavirus strains, implementation in sequence documentation remains inconsistent often complicating querying and retrieval of data from sequence databases.
 
-`rota-annotate` aims to automate generation of rotavirus sequence annotation with a workflow that minimizes user input, identifies rotavirus sequences, implemts proposed guidelines set forth by RCWG, and generates finalized sequence records suitable for GenBank submission.
+`rota-annotate` aims to automate generation of rotavirus sequence annotation with a workflow that minimizes user input, identifies rotavirus sequences, implements proposed guidelines set forth by RCWG, and generates finalized sequence records suitable for GenBank submission.
 
 ### Rotavirus A Genotype Classification
 
